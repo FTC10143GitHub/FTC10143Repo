@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 
 /**
@@ -63,6 +64,7 @@ public class OpMode_LinearTest extends LinearOpMode {
     private Servo leftArm = null;
     private Servo rightArm = null;
     private DcMotor crane=null;
+    private ColorSensor colorSensor=null;
     // double tgtPower=0;
 
     @Override
@@ -78,6 +80,7 @@ public class OpMode_LinearTest extends LinearOpMode {
         leftArm = hardwareMap.get(Servo.class, "left_arm");
         rightArm = hardwareMap.get(Servo.class, "right_arm");
         crane=hardwareMap.get(DcMotor.class, "crane");
+        colorSensor = hardwareMap.get(ColorSensor.class,"color_sensor");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -87,6 +90,7 @@ public class OpMode_LinearTest extends LinearOpMode {
         crane.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftArm.setPosition(0.5);
         rightArm.setPosition(0.5);
+        colorSensor.enableLed(true);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -160,12 +164,14 @@ public class OpMode_LinearTest extends LinearOpMode {
             // Send calculated power to wheels
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
+            colorSensor.enableLed(true);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f), crane (%.2f)", leftPower, rightPower, cranePower);
             telemetry.addData("Arms", "left (%.2f), right (%.2f)", leftArm.getPosition(), rightArm.getPosition());
             telemetry.addData("Pos.", "Crane Location: ", crane.getCurrentPosition());
+            telemetry.addData("Blue ", colorSensor.blue());
             telemetry.update();
         }
     }

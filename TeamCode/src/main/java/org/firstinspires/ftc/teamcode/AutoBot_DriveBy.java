@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
@@ -70,6 +71,7 @@ public class AutoBot_DriveBy extends LinearOpMode {
     private Servo leftArm = null;
     private Servo rightArm = null;
     private DcMotor crane=null;
+    private ColorSensor colorSensor=null;
 
 
     static final double     FORWARD_SPEED = 0.6;
@@ -87,6 +89,7 @@ public class AutoBot_DriveBy extends LinearOpMode {
         leftArm = hardwareMap.get(Servo.class, "left_arm");
         rightArm = hardwareMap.get(Servo.class, "right_arm");
         crane=hardwareMap.get(DcMotor.class, "crane");
+        colorSensor = hardwareMap.colorSensor.get("color_sensor");
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //

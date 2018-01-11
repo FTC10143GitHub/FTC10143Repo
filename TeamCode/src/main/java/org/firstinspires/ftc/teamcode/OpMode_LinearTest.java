@@ -63,8 +63,9 @@ public class OpMode_LinearTest extends LinearOpMode {
     private DcMotor rightDrive = null;
     private Servo leftArm = null;
     private Servo rightArm = null;
-    private Servo crane=null;
+    private DcMotor crane=null;
     private ColorSensor colorSensor=null;
+    // double tgtPower=0;
 
     @Override
     public void runOpMode() {
@@ -78,14 +79,15 @@ public class OpMode_LinearTest extends LinearOpMode {
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         leftArm = hardwareMap.get(Servo.class, "left_arm");
         rightArm = hardwareMap.get(Servo.class, "right_arm");
-        crane=hardwareMap.get(Servo.class, "crane");
+        crane=hardwareMap.get(DcMotor.class, "crane");
         colorSensor = hardwareMap.get(ColorSensor.class,"color_sensor");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
-        crane.setPosition(0.6);
+        crane.setDirection(DcMotor.Direction.FORWARD);
+        crane.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftArm.setPosition(0.5);
         rightArm.setPosition(0.5);
         colorSensor.enableLed(true);
@@ -100,6 +102,7 @@ public class OpMode_LinearTest extends LinearOpMode {
             // Setup a variable for each drive wheel to save power level for telemetry
             double leftPower;
             double rightPower;
+            double cranePower;
             double angelicPower=1.0;
 
             // Choose to drive using either Tank Mode, or POV Mode
@@ -113,6 +116,7 @@ public class OpMode_LinearTest extends LinearOpMode {
             // slowMode: * the values by double slowMode, change when button is pressed.
             leftPower    = Range.clip((drive + turn)*angelicPower, -1.0, 1.0);
             rightPower   = Range.clip((drive - turn)*angelicPower, -1.0, 1.0);
+            cranePower = 0;
 
             // move servos
             // clean up
@@ -131,11 +135,24 @@ public class OpMode_LinearTest extends LinearOpMode {
 
             // move crane
             if(gamepad1.dpad_up){
-                crane.setPosition(0.8);
+                crane.setDirection(DcMotorSimple.Direction.FORWARD);
+                while(gamepad1.dpad_up){
+                    crane.setPower(0.7);
+                }
+                crane.setPower(0.0);
             }
             if(gamepad1.dpad_down){
-                crane.setPosition(0.5);
+                crane.setDirection(DcMotorSimple.Direction.REVERSE);
+                while(gamepad1.dpad_down){
+                    crane.setPower(0.7);
+                }
+                crane.setPower(0.0);
             }
+
+            // Tank Mode uses one stick to control each wheel.
+            // - This requires no math, but it is hard to drive forward slowly and keep straight.
+            // leftPower  = -gamepad1.left_stick_y ;
+            // rightPower = -gamepad1.right_stick_y ;
 
             if(gamepad1.a){
                 angelicPower=100.0;
@@ -151,9 +168,9 @@ public class OpMode_LinearTest extends LinearOpMode {
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f), crane (%.2f)", leftPower, rightPower);
+            telemetry.addData("Motors", "left (%.2f), right (%.2f), crane (%.2f)", leftPower, rightPower, cranePower);
             telemetry.addData("Arms", "left (%.2f), right (%.2f)", leftArm.getPosition(), rightArm.getPosition());
-            telemetry.addData("Pos.", "Crane Location: ", crane.getPosition());
+            telemetry.addData("Pos.", "Crane Location: ", crane.getCurrentPosition());
             telemetry.addData("Blue ", colorSensor.blue());
             telemetry.update();
         }

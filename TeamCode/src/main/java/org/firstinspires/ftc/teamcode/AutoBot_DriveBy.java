@@ -113,6 +113,5 @@ public class AutoBot_DriveBy extends LinearOpMode {
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
-        sleep(10000);
     }
 }

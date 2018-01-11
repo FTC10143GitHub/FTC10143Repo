@@ -29,11 +29,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -43,7 +44,7 @@ import com.qualcomm.robotcore.util.Range;
  * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
  * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
  * class is instantiated on the Robot Controller and executed.
- *2
+ *
  * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
  * It includes all the skeletal structure that all linear OpModes contain.
  *
@@ -51,16 +52,19 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOpPls", group="Linear Opmode")
-//@Disabled
-public class TeleOp_Omni extends LinearOpMode {
+@TeleOp(name="Linear OpModeTest", group="Linear Opmode")
+// @Disabled
+public class OpMode_LinearTest2Wheel extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    // private DcMotor frontLeftDrive = null;
-    // private DcMotor frontRightDrive = null;
-    private DcMotor backLeftDrive = null;
-    private DcMotor backRightDrive = null;
+    private DcMotor leftDrive = null;
+    private DcMotor rightDrive = null;
+    private Servo leftArm = null;
+    private Servo rightArm = null;
+    private DcMotor crane=null;
+    private ColorSensor colorSensor=null;
+    // double tgtPower=0;
 
     @Override
     public void runOpMode() {
@@ -70,17 +74,23 @@ public class TeleOp_Omni extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        // frontLeftDrive  = hardwareMap.get(DcMotor.class, "fl_drive");
-        // frontRightDrive = hardwareMap.get(DcMotor.class, "fr_drive");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "bl_drive");
-        backRightDrive = hardwareMap.get(DcMotor.class, "br_drive");
+        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
+        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftArm = hardwareMap.get(Servo.class, "left_arm");
+        rightArm = hardwareMap.get(Servo.class, "right_arm");
+        crane=hardwareMap.get(DcMotor.class, "crane");
+        colorSensor = hardwareMap.get(ColorSensor.class,"color_sensor");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        // frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        // frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        crane.setDirection(DcMotor.Direction.FORWARD);
+        crane.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftArm.setPosition(0.5);
+        rightArm.setPosition(0.5);
+        colorSensor.enableLed(true);
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -89,37 +99,78 @@ public class TeleOp_Omni extends LinearOpMode {
         while (opModeIsActive()) {
 
             // Setup a variable for each drive wheel to save power level for telemetry
-            // double frontLeftPower;
-            // double frontRightPower;
-            double backLeftPower;
-            double backRightPower;
+            double leftPower;
+            double rightPower;
+            double cranePower;
+            double angelicPower=1.0;
 
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = -gamepad1.left_stick_y;
-            //double turn  =  gamepad1.right_stick_x;
-            // frontLeftPower    = Range.clip(drive, -1.0, 1.0) ;
-            // frontRightPower   = Range.clip(drive, -1.0, 1.0) ;
-            backLeftPower   = Range.clip(drive, -1.0, 1.0) ;
-            backRightPower   = Range.clip(drive, -1.0, 1.0) ;
+            // MAKE SURE THE CONTROLLER IS NOT IN MODE MODE
+            double drive = gamepad1.left_stick_y;
+            double turn  = -gamepad1.right_stick_x;
+            // slowMode: * the values by double slowMode, change when button is pressed.
+            leftPower    = Range.clip((drive + turn)*angelicPower, -1.0, 1.0);
+            rightPower   = Range.clip((drive - turn)*angelicPower, -1.0, 1.0);
+            cranePower = 0;
+
+            // move servos
+            // clean up
+            if(Math.round(gamepad1.left_trigger)==1){
+                leftArm.setPosition(1);
+            }
+            if(Math.round(gamepad1.right_trigger)==1){
+                rightArm.setPosition(0);
+            }
+            if(gamepad1.left_bumper){
+                leftArm.setPosition(0.5);
+            }
+            if(gamepad1.right_bumper){
+                rightArm.setPosition(0.5);
+            }
+
+            // move crane
+            if(gamepad1.dpad_up){
+                crane.setDirection(DcMotorSimple.Direction.FORWARD);
+                while(gamepad1.dpad_up){
+                    crane.setPower(0.7);
+                }
+                crane.setPower(0.0);
+            }
+            if(gamepad1.dpad_down){
+                crane.setDirection(DcMotorSimple.Direction.REVERSE);
+                while(gamepad1.dpad_down){
+                    crane.setPower(0.7);
+                }
+                crane.setPower(0.0);
+            }
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
             // leftPower  = -gamepad1.left_stick_y ;
             // rightPower = -gamepad1.right_stick_y ;
 
+            if(gamepad1.a){
+                angelicPower=100.0;
+            }
+            else if(gamepad1.b){
+                angelicPower=1.0;
+            }
+
             // Send calculated power to wheels
-            // frontLeftDrive.setPower(frontLeftPower);
-            // frontRightDrive.setPower(frontRightPower);
-            backLeftDrive.setPower(backLeftPower);
-            backRightDrive.setPower(backRightPower);
+            leftDrive.setPower(leftPower);
+            rightDrive.setPower(rightPower);
+            colorSensor.enableLed(true);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f)", backLeftPower, backRightPower);
+            telemetry.addData("Motors", "left (%.2f), right (%.2f), crane (%.2f)", leftPower, rightPower, cranePower);
+            telemetry.addData("Arms", "left (%.2f), right (%.2f)", leftArm.getPosition(), rightArm.getPosition());
+            telemetry.addData("Pos.", "Crane Location: ", crane.getCurrentPosition());
+            telemetry.addData("Blue ", colorSensor.blue());
             telemetry.update();
         }
     }

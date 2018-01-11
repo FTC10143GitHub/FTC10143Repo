@@ -65,7 +65,7 @@ public class OpMode_LinearTest extends LinearOpMode {
     private Servo rightArm = null;
     private DcMotor crane=null;
     private ColorSensor colorSensor=null;
-    // double tgtPower=0;
+    private Servo arm=null;
 
     @Override
     public void runOpMode() {
@@ -81,6 +81,7 @@ public class OpMode_LinearTest extends LinearOpMode {
         rightArm = hardwareMap.get(Servo.class, "right_arm");
         crane=hardwareMap.get(DcMotor.class, "crane");
         colorSensor = hardwareMap.get(ColorSensor.class,"color_sensor");
+        arm=hardwareMap.get(Servo.class, "arm");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -91,6 +92,7 @@ public class OpMode_LinearTest extends LinearOpMode {
         leftArm.setPosition(0.5);
         rightArm.setPosition(0.5);
         colorSensor.enableLed(true);
+        arm.setPosition(0.6);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -148,11 +150,12 @@ public class OpMode_LinearTest extends LinearOpMode {
                 }
                 crane.setPower(0.0);
             }
-
-            // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            // leftPower  = -gamepad1.left_stick_y ;
-            // rightPower = -gamepad1.right_stick_y ;
+            if(gamepad1.dpad_left){
+                arm.setPosition(0.8);
+            }
+            if(gamepad1.dpad_right){
+                arm.setPosition(0.4);
+            }
 
             if(gamepad1.a){
                 angelicPower=100.0;

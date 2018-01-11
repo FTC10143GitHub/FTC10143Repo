@@ -174,7 +174,7 @@ public class OpMode_LinearTest extends LinearOpMode {
             telemetry.addData("Motors", "left (%.2f), right (%.2f), crane (%.2f)", leftPower, rightPower, cranePower);
             telemetry.addData("Arms", "left (%.2f), right (%.2f)", leftArm.getPosition(), rightArm.getPosition());
             telemetry.addData("Pos.", "Crane Location: ", crane.getCurrentPosition());
-            telemetry.addData("Blue ", colorSensor.blue());
+            telemetry.addData("RGB: ", colorSensor.red()+"  "+colorSensor.green()+"  "+colorSensor.blue());
             telemetry.update();
         }
     }

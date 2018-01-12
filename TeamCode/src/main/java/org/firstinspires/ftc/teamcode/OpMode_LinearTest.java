@@ -92,7 +92,7 @@ public class OpMode_LinearTest extends LinearOpMode {
         leftArm.setPosition(0.5);
         rightArm.setPosition(0.5);
         colorSensor.enableLed(true);
-        arm.setPosition(0.6);
+        arm.setPosition(0);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -151,10 +151,10 @@ public class OpMode_LinearTest extends LinearOpMode {
                 crane.setPower(0.0);
             }
             if(gamepad1.dpad_left){
-                arm.setPosition(0.8);
+                arm.setPosition(1);
             }
             if(gamepad1.dpad_right){
-                arm.setPosition(0.4);
+                arm.setPosition(0);
             }
 
             if(gamepad1.a){

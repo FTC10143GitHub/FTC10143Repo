@@ -93,7 +93,6 @@ public class OpMode_LinearTest extends LinearOpMode {
         rightArm.setPosition(0.5);
         colorSensor.enableLed(true);
         arm.setPosition(0);
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
@@ -113,7 +112,7 @@ public class OpMode_LinearTest extends LinearOpMode {
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
             // MAKE SURE THE CONTROLLER IS NOT IN MODE MODE
-            double drive = gamepad1.left_stick_y;
+            double drive = -gamepad1.left_stick_y;
             double turn  = -gamepad1.right_stick_x;
             // slowMode: * the values by double slowMode, change when button is pressed.
             leftPower    = Range.clip((drive + turn)*angelicPower, -1.0, 1.0);

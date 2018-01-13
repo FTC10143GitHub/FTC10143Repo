@@ -61,7 +61,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="AutoBot_DriveBy", group="AutoBot")
+@Autonomous(name="AutoBot_DriveBy_Red", group="AutoBot")
 public class AutoBot_DriveBy extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -72,6 +72,7 @@ public class AutoBot_DriveBy extends LinearOpMode {
     private Servo rightArm = null;
     private DcMotor crane=null;
     private ColorSensor colorSensor=null;
+    private Servo arm=null;
 
 
     static final double     FORWARD_SPEED = 0.6;
@@ -90,26 +91,38 @@ public class AutoBot_DriveBy extends LinearOpMode {
         rightArm = hardwareMap.get(Servo.class, "right_arm");
         crane=hardwareMap.get(DcMotor.class, "crane");
         colorSensor = hardwareMap.colorSensor.get("color_sensor");
+        arm=hardwareMap.get(Servo.class, "arm");
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
+        arm.setPosition(0);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // Step through each leg of the path, ensuring that the Auto mode has not been stopped along the way
 
+
+        //Step 1: lower arm
+        arm.setPosition(0.4);
+        //Step 2: Check color
+        if(colorSensor.red()>colorSensor.blue()&&colorSensor.red()>90){
+
+        }
         // Step 1:  Drive forward for 3 seconds
         leftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         rightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftDrive.setPower(FORWARD_SPEED);
-        rightDrive.setPower(FORWARD_SPEED);
+        leftDrive.setPower(0.0);
+        rightDrive.setPower(0.0);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 0.2)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.3)) {
+            leftDrive.setPower(FORWARD_SPEED);
+            rightDrive.setPower(FORWARD_SPEED);
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
+
 
         telemetry.addData("Path", "Complete");
         telemetry.update();

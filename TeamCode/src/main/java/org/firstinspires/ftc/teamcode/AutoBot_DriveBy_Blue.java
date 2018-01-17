@@ -30,15 +30,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 /**
  * This file illustrates the concept of driving a path based on time.
@@ -61,8 +58,8 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="AutoBot_DriveBy_Red", group="AutoBot")
-public class AutoBot_DriveBy extends LinearOpMode {
+@Autonomous(name="AutoBot_DriveBy_Blue", group="AutoBot")
+public class AutoBot_DriveBy_Blue extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -110,7 +107,7 @@ public class AutoBot_DriveBy extends LinearOpMode {
         arm.setPosition(0.8);
         sleep(5300);
         //Step 2: Check color
-        if(colorSensor.red()>colorSensor.blue()&&colorSensor.red()>50){
+        if(colorSensor.blue()>colorSensor.red()&&colorSensor.blue()>50){
             leftDrive.setDirection(DcMotor.Direction.FORWARD);
             rightDrive.setDirection(DcMotor.Direction.FORWARD);
             leftDrive.setPower(0.2);
@@ -119,7 +116,7 @@ public class AutoBot_DriveBy extends LinearOpMode {
             leftDrive.setPower(0.0);
             rightDrive.setPower(0.0);
         }
-        else if(colorSensor.blue()>colorSensor.red()&&colorSensor.blue()>50){
+        else if(colorSensor.red()>colorSensor.blue()&&colorSensor.red()>50){
             leftDrive.setDirection(DcMotor.Direction.REVERSE);
             rightDrive.setDirection(DcMotor.Direction.REVERSE);
             leftDrive.setPower(0.2);

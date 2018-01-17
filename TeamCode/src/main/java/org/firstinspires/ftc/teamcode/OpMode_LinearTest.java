@@ -138,14 +138,14 @@ public class OpMode_LinearTest extends LinearOpMode {
             if(gamepad1.dpad_up){
                 crane.setDirection(DcMotorSimple.Direction.FORWARD);
                 while(gamepad1.dpad_up){
-                    crane.setPower(0.7);
+                    crane.setPower(0.8);
                 }
                 crane.setPower(0.0);
             }
             if(gamepad1.dpad_down){
                 crane.setDirection(DcMotorSimple.Direction.REVERSE);
                 while(gamepad1.dpad_down){
-                    crane.setPower(0.7);
+                    crane.setPower(0.8);
                 }
                 crane.setPower(0.0);
             }
